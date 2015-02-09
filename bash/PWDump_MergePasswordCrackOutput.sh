@@ -1,5 +1,5 @@
 #!/bin/bash
-#To enable and disable tracing use:  set -x (On) set +x (Off)
+# To enable and disable tracing use:  set -x (On) set +x (Off)
 
 # =========================
 # Author:         Jon Zeolla (JZeolla)
