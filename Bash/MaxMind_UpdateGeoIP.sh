@@ -16,16 +16,16 @@
 # =========================
 
 ## Set static variable(s)
-declare -r GEOIP_URL="http://geolite.maxmind.com/download/geoip/database"	# Base GeoIP URL
-declare -r GEOLITE_COUNTRY_FILE="GeoLiteCountry/GeoIP.dat.gz"			    # GeoIP.dat relative URI
-declare -r GEOLITE_COUNTRY_IPV6_FILE="GeoIPv6.dat.gz"				        # GeoIPv6.dat relative URI
-declare -r GEOLITE_CITY_FILE="GeoLiteCity.dat.gz"				            # GeoLiteCity.dat relative URI
-declare -r GEOLITE_ASNUM_FILE="asnum/GeoIPASNum.dat.gz"				        # GeoIPASNum.dat relative URI
-declare -r GEOLITE_ASNUM_IPV6_FILE="asnum/GeoIPASNumv6.dat.gz"			    # GeoIPASNumv6.dat relative URI
-declare -r DEFAULT_PLAYGROUND="/tmp"					                	# Default playground, in case the real playground is inaccessable
+declare -r GEOIP_URL="http://geolite.maxmind.com/download/geoip/database"   # Base GeoIP URL
+declare -r GEOLITE_COUNTRY_FILE="GeoLiteCountry/GeoIP.dat.gz"               # GeoIP.dat relative URI
+declare -r GEOLITE_COUNTRY_IPV6_FILE="GeoIPv6.dat.gz"                       # GeoIPv6.dat relative URI
+declare -r GEOLITE_CITY_FILE="GeoLiteCity.dat.gz"                           # GeoLiteCity.dat relative URI
+declare -r GEOLITE_ASNUM_FILE="asnum/GeoIPASNum.dat.gz"                     # GeoIPASNum.dat relative URI
+declare -r GEOLITE_ASNUM_IPV6_FILE="asnum/GeoIPASNumv6.dat.gz"              # GeoIPASNumv6.dat relative URI
+declare -r DEFAULT_PLAYGROUND="/tmp"                                        # Default playground, in case the real playground is inaccessable
 declare -r PLAYGROUND="/usr/share/GeoIP/tmp"                                # Playground area for manipulating files.  
-declare -r PRODUCTION="/usr/share/GeoIP"					                # Production area
-declare -r EMAIL_FILE="GEOIP_$(date +"%F_%H-%M").txt"				        # Persistent file for managing the email notifications
+declare -r PRODUCTION="/usr/share/GeoIP"                                    # Production area
+declare -r EMAIL_FILE="GEOIP_$(date +"%F_%H-%M").txt"                       # Persistent file for managing the email notifications
 declare -r NOTIFY_SRC="example@example.com"                                 # TODO:  Update the notification source
 declare -r NOTIFY_DST="example@example.com"                                 # TODO:  Update the notification destination
 
