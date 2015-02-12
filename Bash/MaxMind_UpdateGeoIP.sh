@@ -31,10 +31,8 @@ declare -r NOTIFY_DST="example@example.com"                                 # TO
 
 ## Set integer variable(s)
 declare -i EXIT_CODE=0
-
-## Set regular global variables
-NETCONN="0"
-BKPDONE="0"
+declare -i NETCONN=0
+declare -i BKPDONE=0
 
 ## Load up the array of file(s) to download/validate
 declare -a arrayURLList=("${GEOIP_URL}/${GEOLITE_COUNTRY_FILE}" "${GEOIP_URL}/${GEOLITE_COUNTRY_IPV6_FILE}" "${GEOIP_URL}/${GEOLITE_CITY_FILE}" "${GEOIP_URL}/${GEOLITE_ASNUM_FILE}" "${GEOIP_URL}/${GEOLITE_ASNUM_IPV6_FILE}")
@@ -179,7 +177,7 @@ do
         if [ "${EXIT_CODE}" -lt "2" ]; then EXIT_CODE=2; fi
         echo -e "ERROR:    ${url} is NOT accessible from this machine" | tee -a "${PLAYGROUND}/${EMAIL_FILE}"
     else
-        NETCONN="1"
+        NETCONN=1
         echo -e "INFO:     ${url} is accessible from this machine" | tee -a "${PLAYGROUND}/${EMAIL_FILE}"
     fi
 done
@@ -225,7 +223,7 @@ do
     fi
 done
 
-BKPDONE="1"
+BKPDONE=1
 
 # Download and decompress the files
 for url in "${arrayURLList[@]}"
