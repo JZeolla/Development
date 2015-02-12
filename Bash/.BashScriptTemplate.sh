@@ -3,7 +3,7 @@
 
 # =========================
 # Author:          Jon Zeolla (JZeolla)
-# Creation date:   *Creation Date*
+# Last update:     *Creation Date*
 # File Type:       *File Type*
 # Version:         *Version*
 # Repository:      *Repository location*
