@@ -3,7 +3,7 @@
 
 # =========================
 # Author:          Jon Zeolla (JZeolla)
-# Creation date:   2012-10-22
+# Last update:     2012-10-22
 # File Type:       Bash Script
 # Version:         1.0
 # Repository:      https://github.com/JZeolla
