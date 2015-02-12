@@ -1,11 +1,12 @@
 @echo off
 
 REM =========================
-REM Author:         Jon Zeolla (JZeolla)
-REM Creation date:  2013-12-02
-REM File Type:      Windows Batch File
-REM Version:        1.0
-REM Description:    This is a batch file to help organize my wife's music
+REM Author:          Jon Zeolla (JZeolla)
+REM Creation date:   2013-12-02
+REM File Type:       Windows Batch File
+REM Version:         1.0
+REM Repository:      https://github.com/JZeolla
+REM Description:     This is a batch file to help organize my wife's music
 REM
 REM Notes
 REM - I am saving this as an example of how to use delayed expansion versus percent expansion.  
