@@ -2,7 +2,7 @@
 
 REM =========================
 REM Author:          Jon Zeolla (JZeolla)
-REM Creation date:   2008-09-26
+REM Last update:     2008-09-26
 REM File Type:       Windows Batch File
 REM Version:         1.0
 REM Repository:      https://github.com/JZeolla
