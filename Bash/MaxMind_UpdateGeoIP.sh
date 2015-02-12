@@ -66,7 +66,7 @@ if [ -s "${PLAYGROUND}/${1}.bkp" ] && [ -s "${PRODUCTION}/${1}" ] && [ "$(/usr/b
         fi
     fi
 elif [ "$(/usr/bin/md5sum ${PLAYGROUND}/${FILE%.*}.bkp | awk '{print $1}')" == "$(/usr/bin/md5sum ${PRODUCTION}/${FILE%.*} | awk '{print $1}')" ]; then
-    echo -e "INFO:     The backup is identical to the production file.  Removing the backup without restoring it." | tee -a "${PLAYGROUND}/${EMAIL_FILE}"
+    echo -e "INFO:     The backup is identical to the production file.  Attempting to remove the backup without restoring it." | tee -a "${PLAYGROUND}/${EMAIL_FILE}"
     rm "${PLAYGROUND}/${1}.bkp"
 
     if [ "$?" != "0" ]; then
@@ -78,7 +78,7 @@ elif [ "$(/usr/bin/md5sum ${PLAYGROUND}/${FILE%.*}.bkp | awk '{print $1}')" == "
 else
     if [ -r "${PRODUCTION}/${1}" ]; then
         if [ "${EXIT_CODE}" -lt "2" ]; then EXIT_CODE=2; fi
-        echo -e "ERROR:    ${PLAYGROUND}/${1}.bkp did not exist, was blank, the backup process did not complete properly, or we refused to create a blank file in production.  Removing the backup file ${PLAYGROUND}/${1}.bkp." | tee -a "${PLAYGROUND}/${EMAIL_FILE}" 
+        echo -e "ERROR:    ${PLAYGROUND}/${1}.bkp did not exist, was blank, the backup process did not complete properly, or we refused to create a blank file in production.  Attempting to remove the backup file ${PLAYGROUND}/${1}.bkp." | tee -a "${PLAYGROUND}/${EMAIL_FILE}" 
         rm "${PLAYGROUND}/${1}.bkp"
 
         if [ "$?" != "0" ]; then
@@ -89,7 +89,7 @@ else
         fi
     else
         if [ "${EXIT_CODE}" -lt "2" ]; then EXIT_CODE=2; fi
-        echo -e "ERROR:    There were numerous issues that occurred.  Whatever happened, this instance of the script should be scrutinized.  Removing the backup file ${PLAYGROUND}/${1}.bkp if it exists." | tee -a "${PLAYGROUND}/${EMAIL_FILE}"
+        echo -e "ERROR:    There were numerous issues that occurred.  Whatever happened, this instance of the script should be scrutinized.  Attempting to remove the backup file ${PLAYGROUND}/${1}.bkp if it exists." | tee -a "${PLAYGROUND}/${EMAIL_FILE}"
         rm "${PLAYGROUND}/${1}.bkp"
 
         if [ "$?" != "0" ]; then
