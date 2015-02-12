@@ -2,7 +2,7 @@
 
 # =========================
 # Author:          Jon Zeolla (JZeolla)
-# Creation date:   2014-10-16
+# Last update:     2014-10-16
 # File Type:       Python Script
 # Version:         1.0
 # Repository:      https://github.com/JZeolla
