@@ -11,7 +11,7 @@
 #
 # Notes
 # - MaxMind's geoipupdate script is an alternative - https://github.com/maxmind/geoipupdate
-# - Anything that has a placeholder value is tagged with TODO.
+# - Anything that has a follow-up or placeholder value is tagged with TODO.
 #
 # =========================
 
