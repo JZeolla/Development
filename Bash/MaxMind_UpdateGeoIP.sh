@@ -66,7 +66,7 @@ if [ -s "${PLAYGROUND}/${1}.bkp" ] && [ -s "${PRODUCTION}/${1}" ] && [ "$(/usr/b
         fi
     fi
 elif [ "$(/usr/bin/md5sum ${PLAYGROUND}/${FILE%.*}.bkp | awk '{print $1}')" == "$(/usr/bin/md5sum ${PRODUCTION}/${FILE%.*} | awk '{print $1}')" ]; then
-    echo -e "INFO:     The backup is identical to the production file.  Attempting to remove the backup without restoring it." | tee -a "${PLAYGROUND}/${EMAIL_FILE}"
+    echo -e "INFO:     The backup for ${FILE%.*} is identical to the production file.  Attempting to remove the backup without restoring it." | tee -a "${PLAYGROUND}/${EMAIL_FILE}"
     rm "${PLAYGROUND}/${1}.bkp"
 
     if [ "$?" != "0" ]; then
