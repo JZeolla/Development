@@ -1,11 +1,12 @@
 #!/usr/bin/env python2
 
 # =========================
-# Author:         Jon Zeolla (JZeolla)
-# Creation date:  2014-10-16
-# File Type:      Python Script
-# Version:        1.0
-# Description:    This is a python script to quickly check whether IPs are in preset groups using stdin.  It will print the IP(s) you provided to stdout if it is in the IPSet which you are comparing against.  
+# Author:          Jon Zeolla (JZeolla)
+# Creation date:   2014-10-16
+# File Type:       Python Script
+# Version:         1.0
+# Repository:      https://github.com/JZeolla
+# Description:     This is a python script to quickly check whether IPs are in preset groups using stdin.  It will print the IP(s) you provided to stdout if it is in the IPSet which you are comparing against.  
 #
 # Notes
 # - Could be improved to create IPSets using imports from a company's IPAM solution
