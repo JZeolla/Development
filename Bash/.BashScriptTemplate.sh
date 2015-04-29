@@ -19,7 +19,7 @@
 
 ## Global Instantiations
 # Constant Variables
-declare -r logFile=/home/jzeolla/example.txt
+declare -r logFile=/home/jzeolla/example.txt # Could also use /usr/bin/logger -t <tag> to send via syslog
 
 # Integer Variables
 declare -i var=10
