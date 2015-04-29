@@ -54,6 +54,6 @@ function test
 
 
 ## Stop Logging and exit appropriately
-echo -e "$0: $* completed at [`date`] as PID $$ with $- flags" >> $logFile
+echo -e "$0: $* completed at [`date`] as PID $$ with $- flags" >> "${logFile}"
 
 exit "${EXIT_CODE}"
