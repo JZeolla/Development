@@ -17,10 +17,6 @@
 # =========================
 
 
-## Begin Logging
-
-
-
 ## Global Instantiations
 # Constant Variables
 declare -r logFile=/home/jzeolla/example.txt
@@ -30,6 +26,8 @@ declare -i var=10
 
 # Variables
 EXIT_CODE=0
+
+## Begin Logging
 
 
 ## Functions
