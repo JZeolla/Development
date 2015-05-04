@@ -28,7 +28,7 @@ declare -i var=10
 EXIT_CODE=0
 
 ## Begin Logging
-
+exec 1> >(logger -s -t $(hostname)_$(readlink -f ${0})) 2>&1
 
 ## Functions
 function test
