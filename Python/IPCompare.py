@@ -5,7 +5,7 @@
 # Last update:     2014-10-16
 # File Type:       Python Script
 # Version:         1.0
-# Repository:      https://github.com/JZeolla
+# Repository:      https://github.com/JonZeolla
 # Description:     This is a python script to quickly check whether IPs are in preset groups using stdin.  It will print the IP(s) you provided to stdout if it is in the IPSet which you are comparing against.  
 #
 # Notes
