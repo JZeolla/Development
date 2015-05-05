@@ -6,7 +6,7 @@
 # Last update:     2012-10-22
 # File Type:       Bash Script
 # Version:         1.0
-# Repository:      https://github.com/JZeolla
+# Repository:      https://github.com/JonZeolla
 # Description:     This is a bash script to merge the output of a password cracking tool with the original dump into a csv, putting all information for one account on one row.
 #
 # Notes
