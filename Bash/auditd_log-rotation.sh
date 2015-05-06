@@ -24,7 +24,7 @@ EXIT_VALUE=0                                        # Exit value for the rotatio
 AUDIT_LOG_DST="/var/log/audit"                      # Audit log destination
 
 ## Begin Logging stdout and stderr
-exec 1> >(logger -s -t $(basename $0) -p authpriv.err) 2>&1
+exec 1> >(logger -s -t $(basename $0) -p user.err) 2>&1
 
 ## Functions
 function error_out() {
