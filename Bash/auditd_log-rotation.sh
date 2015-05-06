@@ -21,16 +21,14 @@
 # Variables
 EXIT_CODE=0                                         # Script exit code
 EXIT_VALUE=0                                        # Exit value for the rotation
-NOTIFY_SRC="example@example.com"                    # TODO:  Notification source
-NOTIFY_DST="example@example.com"                    # TODO:  Notification destination
 AUDIT_LOG_DST="/var/log/audit"                      # Audit log destination
 
 ## Begin Logging stdout and stderr
-exec 1> >(logger -s -t $(basename $0)) 2>&1
+exec 1> >(logger -s -t $(basename $0) -p user.err) 2>&1
 
 ## Functions
 function error_out() {
-    echo "$(hostname):$(readlink -f ${0}) exited abnormally during ${1} with code ${EXIT_VALUE}" | tee /dev/stderr | mail -s "Alertd:  ERROR during ${1} while running $(hostname):$(readlink -f ${0}) at $(date +%Y-%m-%d_%H:%M)" -a "From: ${NOTIFY_SRC}" "${NOTIFY_DST}"
+    echo "alertd:  ERROR on $(hostname) while running $(readlink -f ${0}) during ${1} at $(date +%Y-%m-%d_%H:%M) with code ${EXIT_VALUE}"
     if [[ (${2} -gt 1) || ($EXIT_CODE -gt 1) ]]; then
         shopt -u extglob
         exit ${2}
