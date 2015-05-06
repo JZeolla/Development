@@ -10,6 +10,7 @@
 # Description:     This is a bash script to rotate and compress audit logs, meant for use in a daily cron job at midnight
 #
 # Notes
+# - If the name of this script changes, you should update any syslog monitoring programs, as this is tagged via the script name
 # - This script assumes that the only thing rotating audit.log is this script (i.e. auditd.conf contains "max_log_file_action = IGNORE"), although I did add some logic to catch already rotated files (not perfect)
 # - Reference http://unixadminschool.com/blog/2014/06/linux-admin-reference-configuring-auditd-in-redhat-enterprise-linux/ and https://www.redhat.com/archives/linux-audit/2011-June/msg00070.html
 # - Anything that has a placeholder value is tagged with TODO.
