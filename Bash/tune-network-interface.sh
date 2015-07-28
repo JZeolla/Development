@@ -3,9 +3,9 @@
 
 # =========================
 # Author:          Jon Zeolla (JZeolla)
-# Last update:     2015-07-15
+# Last update:     2015-07-28
 # File Type:       Bash Script
-# Version:         1.0
+# Version:         1.1
 # Repository:      https://github.com/JonZeolla
 # Description:     This is a basic script meant to be run via a cron at @reboot to ensure persistent NIC settings for systems that evaluate network traffic (such as IDSs).
 #
@@ -15,29 +15,32 @@
 #
 # =========================
 
-# Disable network offloading for everything
-ethtool -K eth0 rx off
-ethtool -K eth0 tx off
-ethtool -K eth0 sg off
-ethtool -K eth0 tso off
-ethtool -K eth0 ufo off
-ethtool -K eth0 gso off
-ethtool -K eth0 gro off
-ethtool -K eth0 lro off
-ethtool -K eth0 rxvlan off
-ethtool -K eth0 txvlan off
-ethtool -K eth0 rxhash off
+# Set the interfaces which are being used as sniffers and iterate through them
+for interface in eth0
+do
+        # Disable NIC offloading for everything to ensure that the Suricata process sees everything as it was on the wire
+        ethtool -K "${interface}" rx off
+        ethtool -K "${interface}" tx off
+        ethtool -K "${interface}" sg off
+        ethtool -K "${interface}" tso off
+        ethtool -K "${interface}" ufo off
+        ethtool -K "${interface}" gso off
+        ethtool -K "${interface}" gro off
+        ethtool -K "${interface}" lro off
+        ethtool -K "${interface}" rxvlan off
+        ethtool -K "${interface}" txvlan off
+        ethtool -K "${interface}" rxhash off
 
-# Set the rx ring parameter to the pre-set max
-ethtool -G eth0 rx 4096
+        # Set the rx ring parameter to the pre-set max
+        ethtool -G "${interface}" rx 4096
 
-# Set UDPv4 and UDPv6 to use the (IP Src, IP Dst, Src Port, Dst Port) tuple instead of (IP Src, IP Dst)
-ethtool -N eth0 rx-flow-hash udp4 sdfn
-ethtool -N eth0 rx-flow-hash udp6 sdfn
+        # Load balance UDP flows using {IP Src, IP Dst, Src Port, Dst Port} for UDPv4 and UDPv6 instead of the default {IP Src, IP Dst}
+        ethtool -N "${interface}" rx-flow-hash udp4 sdfn
+        ethtool -N "${interface}" rx-flow-hash udp6 sdfn
 
-# Generate an interrupt after each frame/millisecond, minimizing latency but increasing load
-ethtool -C eth0 rx-usecs 1 rx-frames 0
+        # Generate an interrupt after each frame/millisecond, minimizing latency but increasing load
+        ethtool -C "${interface}" rx-usecs 1 rx-frames 0
 
-# Disable adaptive interrupt for rx because we are ok with up to one interrupt per received frame
-ethtool -C eth0 adaptive-rx off
-
+        # Disable adaptive interrupt for rx because we are ok with up to one interrupt per received frame
+        ethtool -C "${interface}" adaptive-rx off
+done
