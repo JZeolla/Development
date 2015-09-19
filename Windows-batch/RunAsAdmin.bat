@@ -10,6 +10,7 @@ REM Description:     This is a batch file to help simplify running commands as A
 REM
 REM Notes
 REM - This is a simple example of choices in a Windows batch file
+REM - Anything that has a placeholder value is tagged with TODO
 REM
 REM =========================
 
