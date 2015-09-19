@@ -12,9 +12,9 @@
 
 # =========================
 # Author:          Jon Zeolla (JZeolla)
-# Last update:     2015-07-28
+# Last update:     2015-09-19
 # File Type:       Bash Script
-# Version:         1.1
+# Version:         1.2
 # Repository:      https://github.com/JonZeolla
 # Description:     This is a basic script meant to be run during startup to ensure persistent NIC settings for systems that evaluate network traffic (such as IDSs).  It was designed to use @reboot via a cron, or rc.local to run during startup.  
 #
