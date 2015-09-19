@@ -13,6 +13,7 @@ REM - I am saving this as an example of how to use delayed expansion versus perc
 REM   - When you enable delayed expansion and change or set a variable within a loop then the !variable! syntax allows you to use the variable within the loop
 REM   - Percent interpolation is done when a line or parenthesis block is parsed, before the code is executed. 
 REM   - Delayed interpolation is done only at execution time.
+REM - Anything that has a placeholder value is tagged with TODO
 REM
 REM =========================
 
