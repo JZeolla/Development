@@ -1,8 +1,8 @@
 # =========================
 # Author:          Jon Zeolla (JZeolla)
-# Last update:     2013-12-31
+# Last update:     2015-09-19
 # File Type:       PowerShell Script
-# Version:         1.0
+# Version:         1.1
 # Repository:      https://github.com/JonZeolla
 # Description:     This is a PowerShell script to remove identified false positives in the Nessus Perimeter Service for PCI ASV scanning because they do not provide a method to remember (and hide) verified false positives.
 #
@@ -54,7 +54,7 @@ Write-Host "====================================================================
 Write-Host "Since Tenable's Nessus Perimeter Service won't allow us to ignore verified false positives, we had"
 Write-Host "to throw together a script to produce a list of actionable items."
 Write-Host "==================================================================================================="
-Write-Host "Written by: JZeolla"
+Write-Host "Written by: JonZeolla"
 Write-Host "Version: $ver"
 Write-Host "Last updated: $lastUpdate"
 Write-Host "==================================================================================================="
@@ -74,6 +74,7 @@ Write-Host "`n"
 FOREACH ( $FileScanMe in $arrayScanMeFiles )
 {
   ## Fill "ArrayScanMe" with scan results
+  # TODO - Ensure that the below select statement includes everything that you want, as it can change version to version
   Try
   {	
     $ArrayScanMe = Import-Csv "$dirScanMe\$FileScanMe" -Delimiter "," | select "Plugin ID","CVE","CVSS","Risk","Host","Protocol","Port","Name","Synopsis","Description","Solution","See Also","Plugin Output"
@@ -90,6 +91,7 @@ FOREACH ( $FileScanMe in $arrayScanMeFiles )
     Write-Host "Removing exceptions in $FileException from $FileScanMe"
 
     ## Fill "ArrayException" with the current exceptions file
+    # TODO - Ensure that the below select statement includes everything that you want, as it can change version to version
     Try
     {	$ArrayException = Import-Csv "$dirExceptions\$FileException" -Delimiter "," | select "Plugin ID","CVE","CVSS","Risk","Host","Protocol","Port","Name","Synopsis","Description","Solution","See Also","Plugin Output"	}
     Catch
@@ -121,7 +123,7 @@ FOREACH ( $FileScanMe in $arrayScanMeFiles )
 	
   Write-Host "$i false positives removed from $FileScanMe"
   
-	## Dump to file
+  ## Dump to file
   IF ( $ArrayScanMe.count -gt 0 )
   {    $ArrayScanMe | Export-Csv "$dirResults\$startTime-$FileScanMe" -Delimiter "," -NoTypeInformation    }
   ELSE
