@@ -1,4 +1,18 @@
 @ECHO OFF
+
+REM =========================
+REM Author:          Jon Zeolla (JZeolla)
+REM Last update:     2015-09-19
+REM File Type:       Windows Batch File
+REM Version:         1.1
+REM Repository:      https://github.com/JonZeolla
+REM Description:     This is a batch file to prompt for a back up of a USB drive as soon as it's plugged in
+REM
+REM Notes
+REM - Anything that has a placeholder value is tagged with TODO
+REM
+REM =========================
+
 ECHO Would you like to back up?  Y/N
 ECHO.
 
