@@ -71,8 +71,9 @@ do
         ethtool -G "${interface}" rx 4096 || error_out "$?"
 
         # Load balance UDP flows using {IP Src, IP Dst, Src Port, Dst Port} for UDPv4 and UDPv6 instead of the default {IP Src, IP Dst}
-        ethtool -N "${interface}" rx-flow-hash udp4 sdfn
-        ethtool -N "${interface}" rx-flow-hash udp6 sdfn
+        # TODO - Are there specific error codes which should be ignored for the below two commands if this is already set?
+        ethtool -N "${interface}" rx-flow-hash udp4 sdfn || error_out "$?"
+        ethtool -N "${interface}" rx-flow-hash udp6 sdfn || error_out "$?"
 
         # Generate an interrupt after each frame/millisecond, minimizing latency but increasing load
         ethtool -C "${interface}" rx-usecs 1 rx-frames 0 || error_out "$?"
