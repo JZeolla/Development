@@ -4,7 +4,7 @@
 # =========================
 # Author:          Jon Zeolla (JZeolla)
 # Last update:     *Creation Date*
-# File Type:       *File Type*
+# File Type:       Bash Script
 # Version:         *Version*
 # Repository:      *Repository location*
 # Description:     *Description*
