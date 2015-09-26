@@ -6,7 +6,7 @@
 # Last update:     2015-02-12
 # File Type:       Bash Script
 # Version:         1.1
-# Repository:      https://github.com/JonZeolla
+# Repository:      https://github.com/JonZeolla/Development
 # Description:     This is a bash script to download and update MaxMind GeoIP
 #
 # Notes
