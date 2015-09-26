@@ -3,7 +3,7 @@
 # Last update:     2015-09-19
 # File Type:       PowerShell Script
 # Version:         1.1
-# Repository:      https://github.com/JonZeolla
+# Repository:      https://github.com/JonZeolla/Development
 # Description:     This is a PowerShell script to remove identified false positives in the Nessus Perimeter Service for PCI ASV scanning because they do not provide a method to remember (and hide) verified false positives.
 #
 # Notes
