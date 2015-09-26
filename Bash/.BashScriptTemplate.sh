@@ -40,11 +40,27 @@ function errorecho() {
         >&2 echo "${1}"
 }
 
-function error_out() {
-	EXIT_CODE=${1}
-  errorecho "ERROR on $(hostname) while running $(readlink -f ${0}) $* at $(date +%Y-%m-%d_%H:%M) with code ${EXIT_CODE}"
-	exit "${EXIT_CODE}"
+function cleanup() {
+        # Cleanup temporary files, etc.
 }
+
+function error_out() {
+        EXIT_CODE=${1:-2}
+        errorecho "ERROR on $(hostname) while running $(readlink -f ${0}) $* at $(date +%Y-%m-%d_%H:%M) with code ${EXIT_CODE}"
+        cleanup
+        exit "${EXIT_CODE}"
+}
+
+function quit() {
+        EXIT_CODE=${1:-0}
+        cleanup
+        exit "${EXIT_CODE}"
+}
+
+
+## Handle signals
+# trap common kill signals and call error_out()
+trap 'error_out' SIGINT SIGTERM SIGHUP 
 
 
 ## Check syntax
@@ -65,4 +81,4 @@ function error_out() {
 
 ## Stop Logging and exit appropriately
 echo "$(hostname):$(readlink -f ${0}) $* completed at [`date`] as PID $$ with $- flags and an exit code of ${EXIT_CODE}"
-exit "${EXIT_CODE}"
+quit
