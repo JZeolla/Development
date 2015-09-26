@@ -28,7 +28,7 @@ exec 2> >(logger -s -t $(basename ${0}) -p local1.err)
 # Array Variables
 #declare -a var
 # Associative Arrays
-#declre -A var
+#declare -A var
 # Integer Variables
 declare -i EXIT_CODE=0
 # Generic Global Variables
