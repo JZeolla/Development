@@ -6,7 +6,7 @@
 # Last update:     2015-05-04
 # File Type:       Bash Script
 # Version:         1.0
-# Repository:      https://github.com/JZeolla
+# Repository:      https://github.com/JZeolla/Development
 # Description:     This is a bash script to rotate and compress audit logs, meant for use in a daily cron job at midnight
 #
 # Notes
