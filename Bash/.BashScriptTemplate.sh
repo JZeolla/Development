@@ -2,7 +2,7 @@
 # To enable and disable tracing use:  set -x (On) set +x (Off)
 
 # =========================
-# Author:          Jon Zeolla (JZeolla)
+# Author:          Jon Zeolla (JZeolla, JonZeolla)
 # Last update:     *Creation Date*
 # File Type:       Bash Script
 # Version:         *Version*
@@ -17,24 +17,33 @@
 # =========================
 
 
+## Begin Logging stdout and stderr
+exec 1> >(logger -s -t $(basename ${0}) -p local1.info)
+exec 2> >(logger -s -t $(basename ${0}) -p local1.err)
+
+
 ## Global Instantiations
 # Constant Variables
-declare -r logFile=/home/jzeolla/example.txt # Could also use /usr/bin/logger -t <tag> to send via syslog
-
+#declare -r var
+# Array Variables
+#declare -a var
+# Associative Arrays
+#declre -A var
 # Integer Variables
-declare -i var=10
+declare -i EXIT_CODE=0
+# Generic Global Variables
+#
 
-# Variables
-EXIT_CODE=0
-
-## Begin Logging
-exec 1> >(logger -s -t $(hostname)_$(readlink -f ${0})) 2>&1
 
 ## Functions
-function test
-{
-  echo -e "test"
-  exit 1
+function errorecho() {
+        >&2 echo "${1}"
+}
+
+function error_out() {
+	EXIT_CODE=${1}
+  errorecho "ERROR on $(hostname) while running $(readlink -f ${0}) $* at $(date +%Y-%m-%d_%H:%M) with code ${EXIT_CODE}"
+	exit "${EXIT_CODE}"
 }
 
 
@@ -53,7 +62,7 @@ function test
 ## Cleanup
 
 
-## Stop Logging and exit appropriately
-echo -e "$0: $* completed at [`date`] as PID $$ with $- flags" >> "${logFile}"
 
+## Stop Logging and exit appropriately
+echo "$(hostname):$(readlink -f ${0}) $* completed at [`date`] as PID $$ with $- flags and an exit code of ${EXIT_CODE}"
 exit "${EXIT_CODE}"
