@@ -5,7 +5,7 @@ REM Author:          Jon Zeolla (JZeolla)
 REM Last update:     2013-12-02
 REM File Type:       Windows Batch File
 REM Version:         1.0
-REM Repository:      https://github.com/JonZeolla
+REM Repository:      https://github.com/JonZeolla/Development
 REM Description:     This is a batch file to help organize my wife's music
 REM
 REM Notes
