@@ -42,6 +42,8 @@ function errorecho() {
 
 function cleanup() {
         # Cleanup temporary files, etc.
+        # TODO Replace the : (bash version of noop) with cleanup tasks
+        :
 }
 
 function error_out() {
