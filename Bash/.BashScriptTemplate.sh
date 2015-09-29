@@ -73,6 +73,10 @@ trap 'error_out' SIGINT SIGTERM SIGHUP
 
 
 
+## Check access which will be required later (filesystem ACLs, etc.)
+
+
+
 ## Beginning of main script
 # Only call a function if it exists - declare -F Function &>/dev/null && Function
 
