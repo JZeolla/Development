@@ -1,0 +1,46 @@
+#!/usr/bin/expect -f
+# To enable debugging use:  -d 
+
+# =========================
+# Author:          Jon Zeolla (JZeolla, JonZeolla)
+# Last update:     2015-10-16
+# File Type:       Expect Script
+# Version:         1.0
+# Repository:      https://github.com/JonZeolla/Development
+# Description:     This is a basic expect script that take the username and password as input, iterates through a serverlist from a file in the same directory as the script, and runs commands on those servers.    
+#
+# Notes
+# - It is probably a good idea to send stdout to a file for post processing.
+# - This is technically an expect script, which is very similar to tcl (see http://wiki.tcl.tk/9147).  
+# - Anything that has a placeholder value is tagged with TODO.
+#
+# =========================
+
+# Set variables
+set login [lindex $argv 0];
+set pw [lindex $argv 1];
+set timeout 900
+
+# Get server list
+set file [open "serverlist.txt"]
+set hosts [split [read $file] "\n"]
+close $file
+
+# Iterate over server list
+foreach host $hosts {
+        # Login
+        spawn ssh $login\@$host
+        expect "$login@$host"
+
+        # Run commands
+        send "/usr/bin/sudo /usr/bin/find / \\( -nouser -o -nogroup \\)\r"
+        expect "password for $login:"
+        send "$pw\r"
+        expect "$login@$host"
+
+        # Exit the server
+        send "exit\r"
+        expect "Connection to $host closed."
+}
+
+send "echo Don\'t forget to clean up your history\!"
