@@ -69,7 +69,7 @@ trap 'error_out' SIGINT SIGTERM SIGHUP
 
 
 
-## Sanatize variables, syntax, and input file(s)
+## Sanatize variables, syntax, and input(s)
 
 
 
