@@ -50,10 +50,10 @@ if { $::serverlist == "" } {
 stty cooked echo
 
 # Prompt for the username and save it in a variable
-send_user "Please provide the username to use for ssh connections and/or sudo: "
+send_user "Please provide the username to use for ssh connections: "
 
-expect_user -re "(.*)\n";		# As opposed to using gets stdin, because expect alteres the tcl gets command to not wait for standard input.
-set ::login $expect_out(1,string);	# The previous regexp substring was saved in the variable expect_out(1,string)
+expect_user -re "(.*)\n";               # As opposed to using gets stdin, because expect alteres the tcl gets command to not wait for standard input.
+set ::login $expect_out(1,string);      # The previous regexp substring was saved in the variable expect_out(1,string)
 
 # Disable echoing back to the user.
 stty cooked -echo
@@ -65,7 +65,7 @@ if { $::login == "" } {
 }
 
 # Prompt for the password and save it in a variable
-send_user "Please provide the password to use for ssh connections: "
+send_user "Please provide the password to use for ssh connections and/or sudo: "
 expect_user -re "(.*)\n";	# As opposed to using gets stdin, because expect alteres the tcl gets command to not wait for standard input.
 set ::pw $expect_out(1,string);	# The previous regexp substring was saved in the variable expect_out(1,string)
 send_user "\n"
