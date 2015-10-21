@@ -135,6 +135,7 @@ proc success_login {} {
 set ::file [open "$::serverlist" r]
 
 # Iterate over server list
+# I am using a while below instead of foreach because foreach seems to process a blank line (even though one doesn't exist in the input file) at the end of its loop.
 while {[gets $::file host] != -1} {
 	set ::re_prompt "$::login@$::host\\:\\~\\$"
 
