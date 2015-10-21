@@ -3,9 +3,9 @@
 
 # =========================
 # Author:          Jon Zeolla (JZeolla, JonZeolla)
-# Last update:     2015-10-20
+# Last update:     2015-10-21
 # File Type:       Expect Script
-# Version:         1.1
+# Version:         1.2
 # Repository:      https://github.com/JonZeolla/Development
 # Description:     This is a basic expect script that takes the username and password as input, iterates through a server list via a file that you specify as an argument, and runs commands on those servers.
 #
@@ -22,7 +22,7 @@
 
 
 ## Set static global variables
-set ::command "df -h";                                                          # TODO - Set the command(s) to execute on all systems
+set ::command "/usr/bin/sudo /usr/bin/find / \\( -nouser -o -nogroup \\)";	# TODO - Set the command(s) to execute on all systems
 set ::timeout 900;								# Set timeout to 900 seconds
 set ::exitcode 0;								# Set exitcode to 0 by default
 set ::failure 0;								# Set number of failures to 0
@@ -52,8 +52,8 @@ stty cooked echo
 # Prompt for the username and save it in a variable
 send_user "Please provide the username to use for ssh connections: "
 
-expect_user -re "(.*)\n";               # As opposed to using gets stdin, because expect alteres the tcl gets command to not wait for standard input.
-set ::login $expect_out(1,string);      # The previous regexp substring was saved in the variable expect_out(1,string)
+expect_user -re "(.*)\n";		# As opposed to using gets stdin, because expect alteres the tcl gets command to not wait for standard input.
+set ::login $expect_out(1,string);	# The previous regexp substring was saved in the variable expect_out(1,string)
 
 # Disable echoing back to the user.
 stty cooked -echo
@@ -137,7 +137,10 @@ set ::file [open "$::serverlist" r]
 # Iterate over server list
 # I am using a while below instead of foreach because foreach seems to process a blank line (even though one doesn't exist in the input file) at the end of its loop.
 while {[gets $::file host] != -1} {
-	set ::re_prompt "$::login@$::host\\:\\~\\$"
+        # Get the basename from $::host
+        set ::host_basename [lindex [split $::host "."] 0];	# Split the hostname into a list, using . as a delimiter, which is useful when you have a mix of base hostnames and fully qualified hostnames in your $::serverlist file, then pull out the first element of that list.
+
+	set ::re_prompt "$::login@$::host_basename\\:\\~\\$"
 
 	if { $::host == "" } {
 		send_user "The host name is blank, continuing...\n"
