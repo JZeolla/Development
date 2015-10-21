@@ -1,46 +1,204 @@
 #!/usr/bin/expect -f
-# To enable debugging use:  -d 
+# To enable debugging use -d on the previous line or exp_internal (0 for off, 1 for on) to debug portions of the script.
 
 # =========================
 # Author:          Jon Zeolla (JZeolla, JonZeolla)
-# Last update:     2015-10-16
+# Last update:     2015-10-20
 # File Type:       Expect Script
-# Version:         1.0
+# Version:         1.1
 # Repository:      https://github.com/JonZeolla/Development
-# Description:     This is a basic expect script that take the username and password as input, iterates through a serverlist from a file in the same directory as the script, and runs commands on those servers.    
+# Description:     This is a basic expect script that takes the username and password as input, iterates through a server list via a file that you specify as an argument, and runs commands on those servers.
 #
 # Notes
-# - It is probably a good idea to send stdout to a file for post processing.
-# - This is technically an expect script, which is very similar to tcl (see http://wiki.tcl.tk/9147).  
+# - This script is designed for use with Ubuntu machines.
+# - It is probably a good idea to send stdout and stderr to a file for post processing.  In order to do that as of version 1.1, you need to run the script in the fg, input the username and password, then hit Ctrl+Z and enter "bg;disown" to run in the background and not send a SIGHUP to the program when the shell in which it was ran exits.
+# - This is technically an expect script, but it is very similar to tcl (see http://wiki.tcl.tk/9147).
+# - All variables in procs must use $::variable or ::variable (as appropriate) instead of $variable or variable (again, as appropriate) to indicate that they should look at the global namespace instead of the local namespace.  For consistency, I attempted to use this everywhere.
+# - Previous versions of this script took the login and pw variables as arguments.  Unfortunately, since you are unable to automatically remove only that line from your history within this script (because history is not enabled for non-interactive shells) I retooled it to interact with the user which will similarly not store anything in history.
+# - If you want to do end of line comments, you need to preface your comment with a ";".
 # - Anything that has a placeholder value is tagged with TODO.
 #
 # =========================
 
-# Set variables
-set login [lindex $argv 0];
-set pw [lindex $argv 1];
-set timeout 900
 
-# Get server list
-set file [open "serverlist.txt"]
-set hosts [split [read $file] "\n"]
-close $file
+## Set static global variables
+set ::command "df -h";                                                          # TODO - Set the command(s) to execute on all systems
+set ::timeout 900;								# Set timeout to 900 seconds
+set ::exitcode 0;								# Set exitcode to 0 by default
+set ::failure 0;								# Set number of failures to 0
+set ::success 0;								# Set number of successes to 0
+set ::serverlist [lindex $argv 0];						# Set serverlist to the first argument
+set ::re_failure_login_pass "Permission denied\, please try again\.";		# Set the regex for failed logins via passwords
+set ::re_failure_login_key "Permission denied \(*\)\.";				# Set the regex for failed logins via keys
+set ::re_failure_sudo "Sorry, try again.";					# Set the regex for failed sudos
 
-# Iterate over server list
-foreach host $hosts {
-        # Login
-        spawn ssh $login\@$host
-        expect "$login@$host"
 
-        # Run commands
-        send "/usr/bin/sudo /usr/bin/find / \\( -nouser -o -nogroup \\)\r"
-        expect "password for $login:"
-        send "$pw\r"
-        expect "$login@$host"
-
-        # Exit the server
-        send "exit\r"
-        expect "Connection to $host closed."
+## Check for script usage
+if { $::serverlist == "" } {
+        send_error "Please provide a server list as an argument.\nUsage:  ./script.exp <server list>\n"
+        set ::exitcode 2
+        exit $::exitcode
+} elseif { $::command == "" } {
+        send_error "Please provide a command to execute on the remote systems.\n"
+        set ::exitcode 2
+        exit $::exitcode
 }
 
-send "echo Don\'t forget to clean up your history\!"
+
+## Set dynamic global variables
+# Enable cooked mode and put the terminal into echo mode.
+stty cooked echo
+
+# Prompt for the username and save it in a variable
+send_user "Please provide the username to use for ssh connections and/or sudo: "
+
+expect_user -re "(.*)\n";		# As opposed to using gets stdin, because expect alteres the tcl gets command to not wait for standard input.
+set ::login $expect_out(1,string);	# The previous regexp substring was saved in the variable expect_out(1,string)
+
+# Disable echoing back to the user.
+stty cooked -echo
+
+if { $::login == "" } {
+        send_error "Please provide a username to use for ssh.\n"
+        set ::exitcode 2
+        exit $::exitcode
+}
+
+# Prompt for the password and save it in a variable
+send_user "Please provide the password to use for ssh connections: "
+expect_user -re "(.*)\n";	# As opposed to using gets stdin, because expect alteres the tcl gets command to not wait for standard input.
+set ::pw $expect_out(1,string);	# The previous regexp substring was saved in the variable expect_out(1,string)
+send_user "\n"
+
+# Re-enable echo mode.
+stty cooked echo
+
+if { $::pw == "" } {
+	send_error "Please provide a password to use for ssh.\n"
+	set ::exitcode 2
+	exit $::exitcode
+}
+
+
+## Procedures
+proc failure_login {} {
+	send_error "\nUnable to login to $::host\n"
+	incr ::failure
+	set ::exitcode 1
+	return continue;	# Terminates the current iteration of the innermost nested loop in the code that invoked the current procedure
+}
+
+proc failure_sudo {} {
+	send_error "\nUnable to sudo on $::host\n"
+	incr ::failure
+	set ::exitcode 1
+	return continue;	# Terminates the current iteration of the innermost nested loop in the code that invoked the current procedure
+}
+
+proc success_login {} {
+	# Run command(s)
+	send "$::command\r"
+
+	expect {
+		"\\\[sudo\\\] password for $::login:" {
+			send -- "$::pw\r"; # Send the password.  The -- is in case the password starts with -, so it will not be interpreted as a flag (http://www.tcl.tk/man/expect5.31/expect.1.html)
+
+			expect {
+				"$::re_failure_sudo" {
+		                        # Failed sudo - password was probably incorrectly input
+					# Send Ctrl+C
+					send \003
+
+					failure_sudo
+				}
+				"$::re_prompt" {
+					# The command has completed
+					# Exit the server
+					send "exit\r"
+					expect "Connection to $::host closed."
+					incr ::success
+				}
+			}
+		}
+		"$::re_prompt" {
+			# The command has completed
+			# Exit the server
+			send "exit\r"
+			expect "Connection to $::host closed."
+			incr ::success
+		}
+	}
+}
+
+
+## Get server list
+set ::file [open "$::serverlist" r]
+
+# Iterate over server list
+while {[gets $::file host] != -1} {
+	set ::re_prompt "$::login@$::host\\:\\~\\$"
+
+	if { $::host == "" } {
+		send_user "The host name is blank, continuing...\n"
+		continue
+	} else {
+		send_user "Working on $::host\n"
+	}
+
+	# Login
+	spawn ssh "$::login\@$::host"
+
+	expect {
+                "Are you sure you want to continue connecting \(yes\/no\)\\?" {
+			# Server's public key is not in ~/.ssh/known_hosts
+			send "yes\r"
+			exp_continue
+                }
+		"ssh: Could not resolve hostname *\: nodename nor servname provided, or not known" {
+                        # Server DNS failure or similar
+                        failure_login
+                }
+		"ssh: connect to host*$::host*: Operation timed out" {
+			# Connectivity issue
+			failure_login
+		}
+		"$::login@$::host\'s password\:" {
+			# No key is configured - attempt a login using password authentication
+			send -- "$::pw\r";	# The -- is in case the password starts with -, so it will not be interpreted as a flag (http://www.tcl.tk/man/expect5.31/expect.1.html)
+
+			expect {
+				"$::re_failure_login_pass" {
+					# SSH failure
+					# Send Ctrl+C
+					send \003
+
+					failure_login
+				}
+				"$::re_prompt" {
+					# Successful password authentication
+					success_login
+				}
+			}
+		}
+		"$::re_failure_login_key" {
+			# Failed login - key is probably incorrectly setup
+			# Send Ctrl+C
+			send \003
+
+			failure_login
+		}
+		"$::re_prompt" {
+			# Successful login using key authentication
+			success_login
+		}
+	}
+}
+
+close $::file
+
+if { $::failure == 0 } {
+	send_user "Script completed successfully on $::success systems.\n"
+} else {
+	send_error "Script completed with $::failure failures and $::success successes.\n"
+}
+exit $::exitcode
