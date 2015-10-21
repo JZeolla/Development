@@ -16,6 +16,7 @@
 # - All variables in procs must use $::variable or ::variable (as appropriate) instead of $variable or variable (again, as appropriate) to indicate that they should look at the global namespace instead of the local namespace.  For consistency, I attempted to use this everywhere.
 # - Previous versions of this script took the login and pw variables as arguments.  Unfortunately, since you are unable to automatically remove only that line from your history within this script (because history is not enabled for non-interactive shells) I retooled it to interact with the user which will similarly not store anything in history.
 # - If you want to do end of line comments, you need to preface your comment with a ";".
+# - The list of servers ($::serverlist) is able to take either server basenames (assuming you have a correctly setup DNS/search suffix for your box) or server FQDNs (for cases where DNS/search suffixes may not be sufficient, such as when a single host basename has multiple FQDNs with different suffixes available in DNS, but only one accepts SSH).
 # - Anything that has a placeholder value is tagged with TODO.
 #
 # =========================
