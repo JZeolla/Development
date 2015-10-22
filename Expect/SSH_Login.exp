@@ -75,7 +75,7 @@ send_user "\n"
 stty cooked echo
 
 if { $::pw == "" } {
-	send_error "Please provide a password to use for ssh.\n"
+	send_error "Please provide a password to use for ssh and/or sudo.\n"
 	set ::exitcode 2
 	exit $::exitcode
 }
