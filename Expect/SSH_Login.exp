@@ -169,6 +169,9 @@ while {[gets $::file host] != -1} {
 		}
 		"IT IS POSSIBLE THAT SOMEONE IS DOING SOMETHING NASTY\!" {
 			# SSH keys do not match and strict checking is enabled
+			# Send Ctrl+C
+                        send \003
+
 			failure_login
 		}
 		"$::login@$::host\'s password\:" {
