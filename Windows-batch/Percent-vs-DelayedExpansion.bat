@@ -18,15 +18,19 @@ REM
 REM =========================
 
 setlocal enabledelayedexpansion
+REM TODO:  Change User to the correct user below
 for /d %%i in ("C:\Users\User\Music\Unknown artist\*") do (
 cls
 echo "%%i"
 set /p album=Album name:  
 rename "%%i" "!album!"
 set /p artist=Artist name for !album!:  
+REM TODO:  Change User to the correct user below
 mkdir "C:\Users\User\Music\!artist!\!album!"
+REM TODO:  Change User to the correct user below
 robocopy "C:\Users\User\Music\Unknown artist\!album!" "C:\Users\User\Music\!artist!\!album!" /MOVE /NFL /NDL /NJH /NJS /nc /ns /np
 cls
 )
+REM TODO:  Change User to the correct user below
 rmdir /s /q "C:\Users\User\Music\Unknown artist"
 echo All done!
