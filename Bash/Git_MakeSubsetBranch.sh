@@ -7,10 +7,11 @@
 # File Type:       Bash Script
 # Version:         1.0
 # Repository:      https://github.com/JonZeolla/Development
-# Description:     This is a bash script to create a branch, which is a subset of a repo, to allow people to only clone parts of repos quickly during labs where we may have limited bandwidth
+# Description:     This is a bash script to create a branch, which is a subset of a repo, to allow people to only clone parts of repos quickly during labs where we may have limited bandwidth.
 #
 # Notes
 # - This script is exclusively created for my personal workflow and may not work well for others.
+# - This script is related to https://github.com/JonZeolla/Development/blob/master/Bash/Git_MergeSubsetBranch.sh.
 # - Anything that has a placeholder value is tagged with TODO.
 #
 # =========================
