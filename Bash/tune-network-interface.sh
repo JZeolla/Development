@@ -12,9 +12,9 @@
 
 # =========================
 # Author:          Jon Zeolla (JZeolla)
-# Last update:     2015-09-19
+# Last update:     2016-05-27
 # File Type:       Bash Script
-# Version:         1.2
+# Version:         1.3
 # Repository:      https://github.com/JonZeolla/Development
 # Description:     This is a basic script meant to be run during startup to ensure persistent NIC settings for systems that evaluate network traffic (such as IDSs).  It was designed to use @reboot via a cron, or rc.local to run during startup.  
 #
@@ -24,8 +24,8 @@
 #
 # =========================
 
-## Begin Logging stdout and stderr
-exec 1> >(logger -s -t $(basename ${0}) -p local1.info)
+## Begin Logging stdout and stderr separately
+exec 1> >(logger -t $(basename ${0}) -p local1.info)
 exec 2> >(logger -s -t $(basename ${0}) -p local1.err)
 
 ## Global Instantiations
@@ -83,4 +83,5 @@ do
 done
 
 ## Stop Logging and exit appropriately
-echo "$(hostname):$(readlink -f ${0}) completed at [`date`] as PID $$ with $- flags and an exit code of ${EXIT_CODE}"
+# The stdout output is so that, if this is run as a cron, it will not send an email with a successful run
+echo "$(hostname):$(readlink -f ${0}) completed at [`date`] as PID $$ with $- flags and an exit code of ${EXIT_CODE}" >(logger -t $(basename ${0}) -p local1.info)
