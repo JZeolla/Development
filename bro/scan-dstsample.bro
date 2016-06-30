@@ -4,10 +4,7 @@
 #            Seth Hall
 #            All the authors of the old scan.bro
 
-# Modified by Jon Zeolla to add destination sampling, based off of 
-# https://github.com/bro/bro/blob/master/scripts/policy/protocols/ssh/detect-bruteforcing.bro
-# and
-# https://github.com/bro/bro/blob/master/scripts/policy/protocols/ssh/detect-bruteforcing.bro
+# Modified by Jon Zeolla to add destination sampling
 
 @load base/frameworks/notice
 @load base/frameworks/sumstats
