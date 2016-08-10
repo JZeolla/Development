@@ -19,8 +19,8 @@ $dirResults = "D:\PCI Scans\Results"
 $dirLogs = "D:\PCI Scans\Logs"
 
 ## Set meta
-$ver = "1.0"
-$lastUpdate = "2013-12-31"
+$ver = "1.1"
+$lastUpdate = "2015-09-19"
 $startTime = Get-Date -format yyyy-MM-dd-HH.mm.ss
 $startTimeResults = Get-Date
 $Log = "$dirLogs\$startTime.txt"
