@@ -1,33 +1,31 @@
-##! load this script to enable log output to kafka
+##! Load this script to enable IPv4 Internet-only
+##! output to kafka for Conn, HTTP, and DNS logs
 
 module Kafka;
 
-export {
-        ##
-        ## which log streams should be sent to kafka?
-        ## example:
-        ##              redef Kafka::logs_to_send = set(Conn::Log, HTTP::LOG, DNS::LOG);
-        ##
-        const logs_to_send: set[Log::ID] &redef;
-}
-
 event bro_init() &priority=-5
 {
-        for (stream_id in Log::active_streams)
-        {
-                if (stream_id in Kafka::logs_to_send)
-                {
-                        local filter: Log::Filter = [
-                                $name = fmt("kafka-%s", stream_id),
-                                $pred(rec: Conn::Info) = {
-                                        return ! ( |rec$id$orig_h| == 128 || |rec$id$resp_h| == 128 );
-                                },
-                                $writer = Log::WRITER_KAFKAWRITER,
-                                $config = table(["stream_id"] = fmt("%s", stream_id))
-                        ];
+        Log::add_filter(Conn::LOG, [$name = "kafka-conn",
+                $pred(rec: Conn::Info) = {
+                        return ! (( |rec$id$orig_h| == 128 || |rec$id$resp_h| == 128 ) || ((Site::is_local_addr(rec$id$orig_h) || Site::is_private_addr(rec$id$orig_h)) && (Site::is_local_addr(rec$id$resp_h) || Site::is_private_addr(rec$id$resp_h))));
+                },
+                $writer = Log::WRITER_KAFKAWRITER,
+                $config = table(["Conn::LOG"] = fmt("%s", Conn::LOG))
+        ]);
 
-                        Log::add_filter(stream_id, filter);
-                }
-        }
+        Log::add_filter(HTTP::LOG, [$name = "kafka-http",
+                $pred(rec: HTTP::Info) = {
+                        return ! (( |rec$id$orig_h| == 128 || |rec$id$resp_h| == 128 ) || ((Site::is_local_addr(rec$id$orig_h) || Site::is_private_addr(rec$id$orig_h)) && (Site::is_local_addr(rec$id$resp_h) || Site::is_private_addr(rec$id$resp_h))));
+                },
+                $writer = Log::WRITER_KAFKAWRITER,
+                $config = table(["HTTP::LOG"] = fmt("%s", HTTP::LOG))
+        ]);
+
+        Log::add_filter(DNS::LOG, [$name = "kafka-dns",
+                $pred(rec: DNS::Info) = {
+                        return ! (( |rec$id$orig_h| == 128 || |rec$id$resp_h| == 128 ) || ((Site::is_local_addr(rec$id$orig_h) || Site::is_private_addr(rec$id$orig_h)) && (Site::is_local_addr(rec$id$resp_h) || Site::is_private_addr(rec$id$resp_h))));
+                },
+                $writer = Log::WRITER_KAFKAWRITER,
+                $config = table(["DNS::LOG"] = fmt("%s", DNS::LOG))
+        ]);
 }
-
