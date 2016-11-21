@@ -4,9 +4,9 @@
 
 # =========================
 # Author:          Jon Zeolla (JZeolla, JonZeolla)
-# Last update:     2016-11-15
+# Last update:     2016-11-22
 # File Type:       Bash Script
-# Version:         0.25
+# Version:         0.29
 # Repository:      https://github.com/JZeolla/Development
 # Description:     This is a helper script to configure an Apache Metron (incubating) full-dev or quick-dev environment.
 #
@@ -121,7 +121,7 @@ function _feedback() {
     elif [[ "${1}" != "INFO" && "${1}" != "VERBOSE" ]]; then
         exitCode=1
         issues+=("${2}")
-        echo -e "${!color}${1}:\t${2}${txtDEFAULT}"
+        >&2 echo -e "${!color}${1}:\t${2}${txtDEFAULT}"
     else
         echo -e "${!color}${1}:\t${2}${txtDEFAULT}"
     fi
@@ -350,7 +350,7 @@ wget -q --spider 'www.github.com' || _feedback ABORT "Unable to contact github.c
 # Check for virtualization extensions
 if [[ "${verbose}" == "1" ]]; then _feedback VERBOSE "Ensuring that virtualization extensions are available"; fi
 if ! egrep '(vmx|svm)' /proc/cpuinfo > /dev/null 2>&1 ; then
-    _feedback ABORT "Your system does not support virtualization, which is required for this system to run Metron properly"
+    _feedback ABORT "Your system does not support virtualization, which is required for this system to run Metron using vagrant and virtualbox"
 fi
 
 # Ask the user for confirmation
@@ -456,7 +456,10 @@ if [[ "${verbose}" == "1" ]]; then _feedback VERBOSE "Installing virtualbox into
 cd "$(_getDir "virtualbox")"
 _downloadit "http://download.virtualbox.org/virtualbox/${component[virtualbox]%%_*}/VirtualBox-${component[virtualbox]:0:3}-${component[virtualbox]}_el6-1.x86_64.rpm"
 _managePackages "install" "VirtualBox-${component[virtualbox]:0:3}-${component[virtualbox]}_el6-1.x86_64.rpm"
-sudo usermod -G vboxusers "${usrSpecified}" || _feedback ERROR "Unable to add ${usrSpecified} to the vboxusers group"
+sudo usermod -a -G vboxusers "${usrSpecified}" || _feedback ERROR "Unable to add ${usrSpecified} to the vboxusers group"
+if [[ "${usrCurrent}" == "${usrSpecified}" && $(getent group vboxusers | grep "${usrSpecified}") ]] && ! $(id -Gn | grep vboxusers) ; then
+    _feedback WARN "In order to take advantage of new group memberships you should log out and log in again"
+fi
 
 # Setup vagrant
 if [[ "${verbose}" == "1" ]]; then _feedback VERBOSE "Installing vagrant into $(_getDir "vagrant")"; fi
@@ -474,9 +477,16 @@ git clone -q --recursive ${metronRepo} . || _feedback ABORT "Unable to git clone
 
 # Start Metron, if appropriate
 if [[ "${startitup}" == "1" ]]; then
-    if [[ "${verbose}" == "1" ]]; then _feedback VERBOSE "Starting up metron's ${deployChoice}"; fi
-    cd "$(_getDir "metron")/metron-deployment/vagrant/${deployChoice}"
-    vagrant up || _feedback ERROR "Unable to run vagrant up"
+    if [[ "${usrCurrent}" == "${usrSpecified}" ]]; then
+        if [[ "${verbose}" == "1" ]]; then _feedback VERBOSE "Starting up metron's \"${deployChoice}\""; fi
+        cd "$(_getDir "metron")/metron-deployment/vagrant/${deployChoice}"
+        sg vboxusers -c "vagrant up" || _feedback ERROR "Unable to run sg vboxusers -c \"vagrant up\""
+    elif sudo -v -u "${usrSpecified}" > /dev/null 2>&1 ; then
+        if [[ "${verbose}" == "1" ]]; then _feedback VERBOSE "Starting up metron's \"${deployChoice}\" as \"${usrSpecified}\""; fi
+        sudo -u "${usrSpecified}" vagrant up
+    else
+        _feedback ABORT "Unable to run vagrant up as \"${usrSpecified}\""
+    fi
 fi
 
 ## Exit appropriately
