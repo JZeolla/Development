@@ -4,9 +4,9 @@
 
 # =========================
 # Author:          Jon Zeolla (JZeolla, JonZeolla)
-# Last update:     2016-11-22
+# Last update:     2016-12-10
 # File Type:       Bash Script
-# Version:         0.29
+# Version:         0.32
 # Repository:      https://github.com/JZeolla/Development
 # Description:     This is a helper script to configure an Apache Metron (incubating) full-dev or quick-dev environment.
 #
@@ -28,7 +28,7 @@
 declare -r usrCurrent="${SUDO_USER:-${USER}}"
 declare -r unusedUID="$(awk -F: '{uid[$3]=1}END{for(x=1000;x<=1100;x++) {if(uid[x] != ""){}else{print x; exit;}}}' /etc/passwd)"
 declare -r metronRepo="https://github.com/apache/incubator-metron"
-declare -r OPTSPEC=':fhsu:v-:'
+declare -r OPTSPEC=':fhsu:m:v-:'
 # Potential TOCTOU issue with startTime
 declare -r startTime="$(date +%Y-%m-%d_%H-%M)"
 declare -r txtDEFAULT='\033[0m'
@@ -40,6 +40,7 @@ declare -r txtABORT='\033[1;31m'
 # Array Variables
 declare -a downloaded
 declare -a issues
+declare -a branches
 declare -A component
 declare -A OS
 # Integer Variables
@@ -48,9 +49,11 @@ declare -i verbose=0
 declare -i usetheforce=0
 declare -i startitup=0
 declare -i showthehelp=0
+declare -i mergeit=0
 # String Variables
 declare -- deployChoice=""
 declare -- action=""
+declare -- usrSpecified=""
 
 
 ## Populate associative array
@@ -175,17 +178,18 @@ function _managePackages() {
 function _showHelp() {
     # Note that the here-doc is purposefully using tabs, not spaces, for indentation
     cat <<- HEREDOC
-	Usage: ${0##*/} [-fhs] [-u USER] [--] <DEPLOYMENT CHOICE>
+	Usage: ${0##*/} [-fhs] [-m BRANCH1,BRANCH2,BRANCH3...] [-u USER] [--] <DEPLOYMENT CHOICE>
 
 	-f|--force			Do not prompt before proceeding.
 	-h|--help			Print this help.
+	-m|--merge			Merge a specified branch or set of branches into metron before building
 	-s|--start			Start Metron by default.
 	-u|--user			Specify the user.
 	-v|--verbose			Add verbosity.
 	DEPLOYMENT CHOICE		Choose one of QUICK or FULL.
 	HEREDOC
 
-    _quit
+    _quit "${exitCode}"
 }
 
 
@@ -209,21 +213,41 @@ while getopts "${OPTSPEC}" optchar; do
                     usetheforce=1 ;;
                 help)
                     showthehelp=1 ;;
+                merge)
+                    mergeit=1
+                    # TODO: Testing
+                    # TODO: Need to update this to handle csv
+                    # branch="${!OPTIND}" ;;
+                    echo Try1: branch="${!OPTIND}"
+                    input="${!OPTIND}"; OPTIND=$(( $OPTIND + 1 ))
+                    echo branch="${input}"
+                    echo "Parsing option: '--${OPTARG}', value: '${input}'"
+                    ;;
+                merge=*)
+                    mergeit=1
+                    # TODO: Testing
+                    # TODO: Need to update this to handle csv
+                    echo Try1: branch="${OPTARG#*=}"
+                    input=${OPTARG#*=}
+                    branch=${OPTARG%=$input}
+                    echo "Parsing option: '--${branch}', value: '${input}'"
+                    ;;
                 start)
                     startitup=1 ;;
                 user)
                     # TODO: Testing
                     # usrSpecified="${!OPTIND}" ;;
                     echo Try1: usrSpecified="${!OPTIND}"
-                    val="${!OPTIND}"; OPTIND=$(( $OPTIND + 1 ))
-                    echo usrSpecified="${val}"
-                    echo "Parsing option: '--${OPTARG}', value: '${val}'"
+                    input="${!OPTIND}"; OPTIND=$(( $OPTIND + 1 ))
+                    echo usrSpecified="${input}"
+                    echo "Parsing option: '--${OPTARG}', value: '${input}'"
                     ;;
                 user=*)
+                    # TODO: Testing
                     echo Try1: usrSpecified="${OPTARG#*=}"
-                    val=${OPTARG#*=}
-                    opt=${OPTARG%=$val}
-                    echo "Parsing option: '--${opt}', value: '${val}'"
+                    input=${OPTARG#*=}
+                    opt=${OPTARG%=$input}
+                    echo "Parsing option: '--${opt}', value: '${input}'"
                     ;;
                 verbose)
                     verbose=1 ;;
@@ -238,6 +262,12 @@ while getopts "${OPTSPEC}" optchar; do
             usetheforce=1 ;;
         h)
             showthehelp=1 ;;
+        m)
+            mergeit=1
+            for branch in "${OPTARG//,/ }"; do
+                branches+=("${branch}")
+            done
+            ;;
         s)
             startitup=1 ;;
         u)
@@ -400,7 +430,7 @@ if [[ "${OS[distro]}" == "CentOS" ]]; then
     _managePackages "groupinstall" "Development tools" "X Window System" "Desktop" "Desktop Platform"
     _managePackages "install" "gdm zlib-devel bzip2-devel openssl-devel ncurses-devel sqlite-devel readline-devel tk-devel gdbm-devel db4-devel libpcap-devel xz-devel dkms"
     if [[ "${verbose}" == "1" ]]; then _feedback VERBOSE "Making sure the system will boot into the GUI"; fi
-    sudo sed -ie "26s|^id:3|id:5|" /etc/inittab || _feedback ERROR "Unable to modify /etc/inittab"
+    sudo sed -i "26s|^id:3|id:5|" /etc/inittab || _feedback ERROR "Unable to modify /etc/inittab"
 fi
 
 # Set up a user
@@ -410,7 +440,7 @@ if [[ "${usrSpecified}" != "${USER}" ]]; then
     sudo useradd -d "/home/${usrSpecified}" -g "${usrSpecified}" -G wheel -s /bin/bash -u "${unusedUID}" "${usrSpecified}" || _feedback ERROR "Unable to create user ${usrSpecified} with UID ${unusedUID}"
     sudo passwd "${usrSpecified}" || _feedback ERROR "Unable to reset the password for ${usrSpecified}"
     if [[ "${verbose}" == "1" ]]; then _feedback VERBOSE "Giving ${usrSpecified} full sudo access"; fi
-    sudo sed -ie "98s|^# ||" /etc/sudoers || _feedback ERROR "Unable to modify /etc/sudoers"
+    sudo sed -i "98s|^# ||" /etc/sudoers || _feedback ERROR "Unable to modify /etc/sudoers"
 fi
 
 # Setup some directories
@@ -473,6 +503,11 @@ if [[ "${verbose}" == "1" ]]; then _feedback VERBOSE "Installing metron into $(_
 # TODO: Allow a way to pull down and setup a specific, older version by checking out the tag
 cd "$(_getDir "metron")"
 git clone -q --recursive ${metronRepo} . || _feedback ABORT "Unable to git clone metron"
+if [[ "${mergeit}" == "1" ]]; then
+    for branch in "${branches[@]}"; do
+        git merge "${branch}" || _feedback ABORT "Unable to merge the ${branch} branch"
+    done
+fi
 /usr/local/bin/mvn clean package -DskipTests || _feedback ABORT "Issue building Metron"
 
 # Start Metron, if appropriate
@@ -490,4 +525,4 @@ if [[ "${startitup}" == "1" ]]; then
 fi
 
 ## Exit appropriately
-_quit
+_quit "${exitCode}"
