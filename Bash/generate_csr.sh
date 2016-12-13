@@ -4,9 +4,9 @@
 
 # =========================
 # Author:          Jon Zeolla (JZeolla, JonZeolla)
-# Last update:     2016-12-09
+# Last update:     2016-12-12
 # File Type:       Bash Script
-# Version:         1.2
+# Version:         1.3
 # Repository:      https://github.com/JonZeolla/Development
 # Description:     This is a simple bash script to create a certificate signing request.
 #
@@ -174,6 +174,6 @@ if [[ -n "${SAN}" ]]; then
 fi
 echo
 
-openssl req -new -key "${CN}.key" -config /tmp/openssl.cnf -batch || cleanup "error"
+openssl req -new -key "${CN}.key" -config /tmp/openssl.cnf -batch | tee "${CN}.csr" || cleanup "error"
 chmod o-rwx "${CN}.key"
 cleanup "quit"
