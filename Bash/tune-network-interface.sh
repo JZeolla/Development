@@ -12,9 +12,9 @@
 
 # =========================
 # Author:          Jon Zeolla (JZeolla)
-# Last update:     2017-01-14
+# Last update:     2017-01-15
 # File Type:       Bash Script
-# Version:         1.4
+# Version:         1.5
 # Repository:      https://github.com/JonZeolla/Development
 # Description:     This is a basic script meant to be run during startup to ensure persistent NIC settings for systems that evaluate network traffic (such as IDSs).  It was designed to use @reboot via a cron, or rc.local to run during startup.  
 #
@@ -64,7 +64,7 @@ trap 'error_out 1' SIGINT SIGTERM SIGHUP SIGKILL
 
 ## TODO: Set the interfaces which are being used as sniffers and iterate through them
 # TODO: Also consider disabling/configuring for IPv6
-for interface in eth0
+for interface in "$@"
 do
         # Disable NIC offloading and filtering for everything to ensure that the receiving process sees everything as it was on the wire
         for nicfunction in rx tx sg tso ufo gso gro lro rxvlan txvlan ntuple rxhash; do
@@ -97,4 +97,4 @@ done
 
 ## Stop Logging and exit appropriately
 # The stdout output is so that, if this is run as a cron, it will not send an email with a successful run
-echo "$(hostname):$(readlink -f ${0}) completed at [`date`] as PID $$ with $- flags and an exit code of ${EXIT_CODE}" >(logger -t $(basename ${0}) -p local1.info)
+echo "$(hostname):$(readlink -f ${0}) completed at [`date`] as PID $$ with $- flags and an exit code of ${EXIT_CODE}"
