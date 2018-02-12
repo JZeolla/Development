@@ -11,6 +11,8 @@
 # Description:     This is a simple bash script to create a certificate signing request.
 #
 # Notes
+# - Once extensions can be specified on the command line[1], this should get updated and simplified.
+#   - 1:  https://github.com/openssl/openssl/commit/bfa470a4f64313651a35571883e235d3335054eb
 # - Anything that has a placeholder value is tagged with TODO.
 #
 # =========================
