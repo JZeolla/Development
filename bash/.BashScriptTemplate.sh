@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # To enable and disable tracing use:  set -x (On) set +x (Off)
 # To terminate the script immediately after any non-zero exit status use:  set -e
 
